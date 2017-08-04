@@ -4,3 +4,9 @@
 [submodule "lib/Adafruit_Sensor"]
 	path = lib/Adafruit_Sensor
 	url = https://github.com/adafruit/Adafruit_Sensor.git
+[submodule "lib/u8glib"]
+	path = lib/u8glib
+	url = https://github.com/olikraus/u8glib.git
+[submodule "lib/Adafruit_SSD1306"]
+	path = lib/Adafruit_SSD1306
+	url = https://github.com/adafruit/Adafruit_SSD1306.git
