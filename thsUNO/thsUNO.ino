@@ -1,6 +1,8 @@
 #include <SoftwareSerial.h>
 #include "thsem.h"
 #include "ledem.h"
+//#include "displayem.h"
+#include "btem.h"
 
 //-------- Global variables declarations -----------
 
@@ -11,6 +13,19 @@ const int datapinDHT22 = 2;
 // Led Pin 13 has an LED connected on most Arduino boards, for debugging.
 const int datapinLED = 13;
 ledem myLed;
+
+// 128x32 display
+//displayem myDisplay;
+
+
+// Piezo buzzer
+int piezoPin = 7;
+
+// BT to report data
+const int datapinRxBT = 10;
+const int datapinTxBT = 11;
+btem myBT;
+
 
 // Misc counter
 int aliveLoopCounter=0;
@@ -26,15 +41,22 @@ void(* resetFunc) (void) = 0;//declare reset function at address 0
 //-------------------------------------
 void setup() { 
 
+
   // Serial to debug               
   Serial.begin(9600);
-  Serial.println("Setup...");
+  Serial.println("Setup... 'came on, be my baby, came on'");
  
+  // Wake up buzzer
+  Serial.println("Setup buzzer, hello...");
+  tone(piezoPin, 1000, 500);
+
   // LED to debug
+  Serial.println("Setup LED, hello...");
   myLed.setup(datapinLED);
   myLed.hello();
 
-  Serial.println("Setup...");
+
+  Serial.println("Setup DHT22...");
   if (mythSensor.setup(datapinDHT22)!=0) {
     Serial.print("Failing dht22 setup on pin:");
     Serial.println(datapinDHT22);
@@ -42,7 +64,19 @@ void setup() {
     delay(5);
     resetFunc(); //call reset  
   }
- 
+
+  
+  Serial.println("Setup BT DHT22...");
+  if (myBT.setup(datapinRxBT,datapinTxBT)!=0) {
+    Serial.print("Failing BT setup on pins:RX:");
+    Serial.print(datapinRxBT);
+    Serial.print("-TX:");
+    Serial.println(datapinTxBT);
+    Serial.print("Reset in a few seconds...");
+    delay(5);
+    resetFunc(); //call reset  
+  }
+
 
   Serial.println("Setup DONE");
 }
@@ -55,19 +89,34 @@ void loop() {
    myLed.alive();
 
    if (mythSensor.refresh()!=0){
-     Serial.println("Error reading DHT sensor¡¡¡");
+     Serial.println("Error reading DHT sensor");
+     myLed.hello();
+     tone(piezoPin, 1000, 200);
+     delay(500);
+     tone(piezoPin, 1000, 200);
      //TODO if problem persists in N loops maybe is worthy a reset?
+     myBT.sendKO();
    }
    else {
+     float t=mythSensor.getTemperature();
+     float h=mythSensor.getHumidity();
      Serial.print("Read data form DTH: Temperature:");
-     Serial.print(mythSensor.getTemperature());
+     Serial.print(t);
      Serial.print(" Celsius. Humidity(%):");
-     Serial.println(mythSensor.getHumidity());
+     Serial.println(h);
+     if (myBT.send(t,h)!=0) {
+       //TODO if problem persists in N loops maybe is worthy a reset?
+       myLed.hello();
+       tone(piezoPin, 2000, 1000);
+     }
+     else {
+       myBT.send(t,h);
+     }
    }
 
    Serial.print(aliveLoopCounter++);
-   Serial.println(" ... and still alive");
-
+   Serial.println(" ... and still alive...");
+   delay(5000);
 }
 
 

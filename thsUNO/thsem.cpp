@@ -23,7 +23,10 @@ int thsem::refresh()
   //Read data and store it to variables hum and temp
   h = dht->readHumidity();
   t = dht->readTemperature();
-  return 0;
+  if (isnan(h) || isnan(t))
+    return 1;
+  else
+    return 0;
 }
 
 
