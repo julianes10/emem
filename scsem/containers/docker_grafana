@@ -1,0 +1,8 @@
+#!/bin/bash
+
+#EXAMPLE docker run --rm --name grafana   -p 3000:3000   -v $PWD/grafana/var:/var/lib/grafana -v $PWD/grafana/etc:/etc/grafana --link influxdb   grafana/grafana:3.1.1
+
+
+docker run --rm --name emem_grafana   -p 3000:3000   -v $PWD/grafana/var_lib_grafana:/var/lib/grafana -v $PWD/grafana/etc_grafana:/etc/grafana --link emem_influxdb   grafana/grafana:4.4.3
+
+
