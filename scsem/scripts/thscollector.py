@@ -7,29 +7,64 @@ import json
 
 from influxdb import InfluxDBClient
 
+
+SensorsDirectory ={
+  "Atico":     { "devType":"BT","port":"/dev/rfcomm0","ITEMS":2},
+#  "Dormitorio": { "devType":"BT","port":"/dev/rfcomm0","ITEM":1},
+#  "Cocina":     { "devType":"LOCAL","gpio":23}
+  }
+
+
+
+'''----------------------------------------------------------'''
+'''---------------- class database wrapper       ------------'''
+
 class dbWrapper:
 
     def __init__(self,host, port,user, password, dbname, dbuser, dbpss):
-        """Instantiate a connection to the InfluxDB."""
-        self.client = InfluxDBClient(host, port, user, password,dbname)
+      self.port=port
+      self.host=host
+      self.user=user
+      self.password=password
+      self.dbname=dbname
+      self.dbuser=dbuser
+      self.dbpss=dbpss
+      self.tryReconnect()
 
-        print("Create database: " + dbname)
-        self.client.create_database(dbname)
+
+    def tryReconnect(self):
+      print("Try reconnection to database" + self.dbname)
+      try:
+        """Instantiate a connection to the InfluxDB."""
+        self.client = InfluxDBClient(self.host, self.port, self.user, self.password,self.dbname)
+
+        print("Create database: " + self.dbname)
+        self.client.create_database(self.dbname)
 
         print("Create a retention policy")
         self.client.create_retention_policy('awesome_policy', '3d', 3,default=True)
 
-        print("Switch user: " + dbuser)
-        self.client.switch_user(dbuser, dbpss)
-
+        print("Switch user: " + self.dbuser)
+        self.client.switch_user(self.dbuser, self.dbpss)
+      except KeyboardInterrupt:
+          print("Ok ok, quitting")
+          sys.exit(1)
+      except: 
+          print "Unexpected error attempting to access to BD. It will be retried later.", sys.exc_info()[0]
 
     def addData(self, data):
         try: 
           json_body = data
           self.client.write_points(json_body)
+        except KeyboardInterrupt:
+          print("Ok ok, quitting")
+          sys.exit(1)
         except: 
           print "Unexpected error inserting in DB:", sys.exc_info()[0]
+          self.tryReconnect()
 
+'''----------------------------------------------------------'''
+'''---------------- class bluethoot dht22 wrapper------------'''
 
 class btWrapper:
 
@@ -101,6 +136,23 @@ class btWrapper:
       return data
 
 '''----------------------------------------------------------'''
+'''---------------- class local dht22 wrapper ---------------'''
+
+class localWrapper:
+
+    def __init__(self,gpio):
+      self.gpio=gpio
+      self.tryReconnect()
+
+    def tryReconnect(self):
+      print("Try reconnection to local gpio:{0}".format(self.gpio))
+
+    def getData(self):
+      print("Getting data...")
+      data=None
+      return data
+
+'''----------------------------------------------------------'''
 '''----------------       M A I N         -------------------'''
 '''----------------------------------------------------------'''
 
@@ -111,14 +163,40 @@ def main(host='localhost', port=8086):
                     dbname = 'db_emem',
                     dbuser = 'user_emem', dbpss = 'emem')       
 
-    hdlBT=btWrapper(port='/dev/rfcomm0',speed=9600,timeout=20)
+    '''
+    #Setup handlers for BT devices
+    hdlBTs[]
+    for item in SensorsDirectory:
+      hdlBTs.append()
+
+
+    for count in xrange(4):
+    x = SimpleClass()
+    x.attr = count
+    simplelist.append(x)
+    '''
+
 
     while True:
-       """ Get data from sensors """
-       data = hdlBT.getData()
-       """ Insert in DB """
-       if data is not None:
-          hdlDB.addData(data);
+      for key,item in SensorsDirectory.items():
+        data=None
+        print("## Gathering data from sensor '{0}'".format(key))
+        #Get data from sensors
+        if not 'handler' in item:
+          if item['devType'] == "BT":
+            print("Creating BT object handler...")
+            x=btWrapper(item['port'],speed=9600,timeout=20)
+          elif item['devType'] == "LOCAL":
+            x=localWrapper(item['gpio'])
+          else:
+            print("Unknown sensor device type, ignoring it")
+            continue
+          item['handler']=x
+        #tWrapperList.append(x)
+        data = item['handler'].getData()
+        # Insert in DB 
+        if data is not None:
+           hdlDB.addData(data);
 
 def parse_args():
     """Parse the args."""
