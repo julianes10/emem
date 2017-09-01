@@ -4,12 +4,13 @@ import argparse
 import time
 import sys
 import json
+import subprocess
 
 from influxdb import InfluxDBClient
 
 
 SensorsDirectory ={
-  "Atico":     { "devType":"BT","port":"/dev/rfcomm0","ITEMS":2},
+  "Atico":     	{ "devType":"BT","btmac":"98:D3:32:20:FB:90","port":"/dev/rfcomm0","ITEMS":2},
 #  "Dormitorio": { "devType":"BT","port":"/dev/rfcomm0","ITEM":1},
 #  "Cocina":     { "devType":"LOCAL","gpio":23}
   }
@@ -68,22 +69,34 @@ class dbWrapper:
 
 class btWrapper:
 
-    def __init__(self,port,speed,timeout):
+    def __init__(self,port,mac,speed,timeout):
       self.port=port
       self.speed=speed
       self.timeout=timeout
       self.ser=None
+      self.mac=mac
       self.tryReconnect()
 
     def tryReconnect(self):
-      print("Try reconnection to serial port:" + self.port)
-      self.ser = serial.Serial(
+      print("Try to reconnect  btmac: {0} to port: {1}".format(self.mac,self.port))
+      subprocess.call(["/home/pi/emem/scsem/scripts/bindBTmac.sh",self.mac],shell=True)
+      
+      try:
+        print("Try open serial port:" + self.port)
+        self.ser = serial.Serial(
         port=self.port,\
         baudrate=self.speed,\
         parity=serial.PARITY_NONE,\
         stopbits=serial.STOPBITS_ONE,\
         bytesize=serial.EIGHTBITS,\
         timeout=self.timeout)
+      except KeyboardInterrupt:
+          print("Ok ok, quitting")
+          sys.exit(1)
+      except: 
+          print "Unexpected error binding to btmac or accesing to serial port. It will be retried later.", sys.exc_info()[0]
+          time.sleep(5)
+
 
     def getData(self):
       print("Getting data...")
@@ -158,6 +171,7 @@ class localWrapper:
 
 def main(host='localhost', port=8086):
 
+
     hdlDB=dbWrapper(host, port,
                     user = 'root',password = 'root',
                     dbname = 'db_emem',
@@ -185,7 +199,7 @@ def main(host='localhost', port=8086):
         if not 'handler' in item:
           if item['devType'] == "BT":
             print("Creating BT object handler...")
-            x=btWrapper(item['port'],speed=9600,timeout=20)
+            x=btWrapper(item['port'],item['btmac'],speed=9600,timeout=20)
           elif item['devType'] == "LOCAL":
             x=localWrapper(item['gpio'])
           else:
