@@ -5,6 +5,7 @@ import time
 import sys
 import json
 import subprocess
+import os
 
 from influxdb import InfluxDBClient
 
@@ -79,7 +80,7 @@ class btWrapper:
 
     def tryReconnect(self):
       print("Try to reconnect  btmac: {0} to port: {1}".format(self.mac,self.port))
-      subprocess.call(["/home/pi/emem/scsem/scripts/bindBTmac.sh",self.mac],shell=True)
+      subprocess.call([os.path.dirname(__file__)+"/bindBTmac.sh",self.mac],shell=True)
       
       try:
         print("Try open serial port:" + self.port)
