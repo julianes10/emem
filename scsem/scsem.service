@@ -1,0 +1,14 @@
+[Unit]
+Description=Sensor Collector Software EM
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python /home/pi/emem/scsem/scripts/scsem.py
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
+
+
+
