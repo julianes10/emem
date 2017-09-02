@@ -76,19 +76,19 @@ def main(host='localhost', port=8086,lc=False):
 def launchContainers():
       try:
         internalLogger.info("Relaunching containers...")
-        aux=subprocess.check_output(['./launchContainers.sh','verbose'])      
-        internalLogger.debug("Script output:" + aux)
+        p=subprocess.Popen([EMEM_DEPLOY_DIR+'/scsem/scripts/launchContainers.sh','verbose'])      
+        internalLogger.debug("Script for launching container started  with popen:")
       except KeyboardInterrupt:
         print("Ok ok, quitting")
         sys.exit(1)
       except Exception as e:
         e = sys.exc_info()[0]
-        internalLogger.error('Unexpected error binding to btmac. It will be retried later.')
+        internalLogger.error('Unexpected error launching containers. Not recovery so far TODO.')
         einternalLogger.exception(e)  
         time.sleep(5)
-        return
+        sys.exit(1)
 '''----------------------------------------------------------'''
-'''----------------       sensor_task         -------------------'''
+'''----------------       sensor_task     -------------------'''
 def sensor_task(key,item,hdlDB):
   while True:
     data=None

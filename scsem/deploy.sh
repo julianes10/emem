@@ -42,9 +42,13 @@ elif [ "$1" = "local" ]; then
   echo "WARNING this will use local version. Deployed version will be removed"
   echo "TODO uninstall legacy service, bbdd... "
   rm -rf $DEPLOY_FOLDER
-  echo "Copying local version to $DEPLOY_FOLDER... "
-  cp -rf ../ $DEPLOY_FOLDER
-  rt=$?
+  if [ $? -eq 0 ]; then
+    echo "Copying local version to $DEPLOY_FOLDER... "
+    cp -rf ../ $DEPLOY_FOLDER
+    rt=$?
+  else
+    echo "Error deleting current deploy dir, exiting..."
+  fi 
 else
   echo "ERROR: no option selected for deployed"
   usage

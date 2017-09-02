@@ -27,7 +27,7 @@ class btWrapper():
       self.ser=None
       try:
         internalLogger.info("Try to reconnect btmac: {0} to port: {1}".format(self.mac,self.port))
-        aux=subprocess.check_output(['./bindBTmac.sh',self.mac,'verbose'])      
+        aux=subprocess.check_output([EMEM_DEPLOY_DIR+'/scsem/scripts/bindBTmac.sh',self.mac,'verbose'])      
         internalLogger.debug("Bind script output:" + aux)
       except KeyboardInterrupt:
         print("Ok ok, quitting")

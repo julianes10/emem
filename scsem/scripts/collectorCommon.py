@@ -3,7 +3,8 @@ import sys
 import os
 
 LOGFILE_DEV="/tmp/scsem.log"
-LOGFILE_EXCEPTION="/tmp/scsme.log"
+LOGFILE_EXCEPTION="/tmp/scseme.log"
+EMEM_DEPLOY_DIR="/home/pi/emem"
 
 # Logging
 internalLogger = logging.getLogger('simple_logger')

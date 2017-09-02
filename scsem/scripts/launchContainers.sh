@@ -16,20 +16,22 @@ uname -a | grep arm
 res=$?
 
 if [ $res = 0 ]; then
+  pi="pi"
   if [ "$1" = "verbose" ]; then
     echo "Running on ARM - Assuming pi"
   fi
 fi
     
 
-docker kill emem_influxdb 
-docker kill emem_grafana
+docker kill emem_grafana emem_influxdb 
+sleep 2
+docker kill --signal 9 emem_grafana emem_influxdb
 
 if [ "$1" = "verbose" ]; then
   echo "Status after releasing:"
   reportStatus
 fi
-pushd ../containers/ 
+pushd /home/pi/emem/scsem/containers 
 ./docker_influxdb $pi &
 sleep 2
 ./docker_grafana $pi &
@@ -38,3 +40,4 @@ if [ "$1" = "verbose" ]; then
   echo "Status after binding:"
   reportStatus
 fi
+exit 0
