@@ -44,6 +44,7 @@ class dbWrapper ():
     def addData(self, data):
         try: 
           json_body = data
+          internalLogger.debug("Adding to DB: {0}".format(data))
           self.client.write_points(json_body)
         except KeyboardInterrupt:
             print("Ok ok, quitting")
