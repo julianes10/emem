@@ -19,7 +19,7 @@ SensorsDirectory ={
                   "subnames": { 'TODO': "Terraza Interior", 'Id2':"Terraza Exterior"}
                 },
 #  "Dormitorio": { "devType":"BT","port":"/dev/rfcomm0","ITEM":1},
-  "Cocina":     { "devType":"LOCAL","gpio":23}
+  "Cocina":     { "devType":"LOCAL","gpio":4}
   }
 
 
