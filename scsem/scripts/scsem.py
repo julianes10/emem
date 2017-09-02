@@ -30,9 +30,13 @@ SensorsDirectory ={
 '''----------------       M A I N         -------------------'''
 '''----------------------------------------------------------'''
 
-def main(host='localhost', port=8086):
+def main(host='localhost', port=8086,lc=False):
   print('SCSEM-start -----------------------------')   
   internalLogger.critical('SCSEM-start -----------------------------')        
+
+  if lc==True:
+      launchContainers()
+
   try:    
     hdlDB=dbWrapper(host, port,
                     user = 'root',password = 'root',
@@ -68,6 +72,22 @@ def main(host='localhost', port=8086):
 
 
 '''----------------------------------------------------------'''
+'''----------------       launchContainers-------------------'''
+def launchContainers():
+      try:
+        internalLogger.info("Relaunching containers...")
+        aux=subprocess.check_output(['./launchContainers.sh','verbose'])      
+        internalLogger.debug("Script output:" + aux)
+      except KeyboardInterrupt:
+        print("Ok ok, quitting")
+        sys.exit(1)
+      except Exception as e:
+        e = sys.exc_info()[0]
+        internalLogger.error('Unexpected error binding to btmac. It will be retried later.')
+        einternalLogger.exception(e)  
+        time.sleep(5)
+        return
+'''----------------------------------------------------------'''
 '''----------------       sensor_task         -------------------'''
 def sensor_task(key,item,hdlDB):
   while True:
@@ -94,6 +114,9 @@ def parse_args():
                         help='hostname of InfluxDB http API')
     parser.add_argument('--dbport', type=int, required=False, default=8086,
                         help='port of InfluxDB http API')
+    parser.add_argument("-l","--launchContainers", action="store_true",
+                        help='launch influxdb and grafana containers at startup')
+
     return parser.parse_args()
 
 '''----------------------------------------------------------'''
@@ -109,4 +132,4 @@ def printPlatformInfo():
 if __name__ == '__main__':
     printPlatformInfo()
     args = parse_args()
-    main(host=args.dbhost, port=args.dbport)
+    main(host=args.dbhost, port=args.dbport,lc=args.launchContainers)

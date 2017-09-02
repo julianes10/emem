@@ -1,9 +1,9 @@
 import logging
 import sys
+import os
 
-
-LOGFILE_DEV="/tmp/emem.log"
-LOGFILE_EXCEPTION="/tmp/ememe.log"
+LOGFILE_DEV="/tmp/scsem.log"
+LOGFILE_EXCEPTION="/tmp/scsme.log"
 
 # Logging
 internalLogger = logging.getLogger('simple_logger')
@@ -21,4 +21,9 @@ hdlr_1.setFormatter(formatter_1)
 einternalLogger.addHandler(hdlr_1)
 einternalLogger.setLevel(logging.DEBUG)
 
+def amIaPi():
+  rt=False
+  if "arm" in os.uname()[4]:
+    rt=True
+  return rt
 

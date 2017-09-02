@@ -11,9 +11,8 @@ class localDhtWrapper:
       self.name2db=key
    
     def getData(self):
-      thisArq=os.uname()[4]
-      if "arm" not in thisArq:
-        internalLogger.info("No arm (pi) architecture detected, but '{0}'. Ignoring sensor.".format(thisArq))
+      if not amIaPi():
+        internalLogger.info("No arm (pi) architecture detected. Ignoring sensor")
         return None
       
       import Adafruit_DHT
