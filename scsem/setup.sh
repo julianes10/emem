@@ -1,12 +1,12 @@
+#!/bin/bash 
 # Thanks to easy to follow guide http://www.diegoacuna.me/how-to-run-a-script-as-a-service-in-raspberry-pi-raspbian-jessie/
-echo "This script will install as a service scsem usign systemctl utility"
-echo "TODO clean up and database restore if needed"
-echo "TODO check dev and deploy folders is everything seems to be ok.e.g download from github master or tag..."
-echo "TODO force this intallation from remote dev laptop."
-echo "Its TODO check dev and deploy folders is everything seems to be ok."
+
+DEPLOY_FOLDER=/home/pi/emem
+
+echo "This script will install in your pi a service scsem from $DEPLOY_FOLDER usign systemctl utility"
 sudo cp -rf scsem.service /lib/systemd/system/scsem.service
 sudo chmod 644 /lib/systemd/system/scsem.service
-chmod +x /home/pi/scsem_world.py
+chmod +x ./scripts/scsem.py
 sudo systemctl daemon-reload
 sudo systemctl enable scsem.service
 sudo systemctl start scsem.service

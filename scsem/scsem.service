@@ -1,5 +1,5 @@
 [Unit]
-Description=Sensor Collector Software EM
+Description= SCSEM is a Sensor Collector Software EM
 After=multi-user.target
 
 [Service]
