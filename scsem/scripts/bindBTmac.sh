@@ -1,20 +1,25 @@
-#!/bin/sh
-
+#!/bin/sh 
+#args: $1(BTMAC) [$2 verbose]
+echo "Here we go $@"
 reportStatus ()
 {
   sudo ls /dev/rfc*
-#  sudo tree /var/lib/bluetooth/*/$1
+#  sudo tree /var/lib/bluetooth/*/$2
 }
 
-
-echo "Status before binding:"
-reportStatus
+if [ "$2" = "verbose" ]; then
+  echo "Status before binding:"
+  reportStatus
+fi
 
 sudo rfcomm release hci0 $1
-echo "Status after releasing:"
-reportStatus
+if [ "$2" = "verbose" ]; then
+  echo "Status after releasing:"
+  reportStatus
+fi
 
-
-sudo rfcomm bind hci0 98:D3:32:20:FB:90 1
-echo "Status after binding:"
-reportStatus
+sudo rfcomm bind hci0 $1 1
+if [ "$2" = "verbose" ]; then
+  echo "Status after binding:"
+  reportStatus
+fi
