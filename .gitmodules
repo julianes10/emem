@@ -10,3 +10,6 @@
 [submodule "lib/Adafruit_SSD1306"]
 	path = lib/Adafruit_SSD1306
 	url = https://github.com/adafruit/Adafruit_SSD1306.git
+[submodule "lib/Low-Power"]
+	path = lib/Low-Power
+	url = https://github.com/rocketscream/Low-Power.git
