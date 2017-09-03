@@ -1,4 +1,5 @@
 #include <SoftwareSerial.h>
+#include "LowPower.h"
 #include "thsem.h"
 #include "ledem.h"
 //#include "displayem.h"
@@ -115,8 +116,8 @@ void loop() {
    }
 
    Serial.print(aliveLoopCounter++);
-   Serial.println(" ... and still alive...");
-   delay(5000);
+   Serial.println(" ... and still alive, let's power done 8 secs..");
+   LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF); 
 }
 
 

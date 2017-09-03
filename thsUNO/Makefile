@@ -1,6 +1,6 @@
 BOARD_TAG    = uno
 ARDUINO_PORT = /dev/ttyUSB0
-ARDUINO_LIBS = EEPROM SoftwareSerial DHT-sensor-library Adafruit_Sensor u8glib
+ARDUINO_LIBS = EEPROM SoftwareSerial DHT-sensor-library Adafruit_Sensor LowPower
 
 USER_LIB_PATH = $(realpath ../lib)
 

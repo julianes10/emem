@@ -64,6 +64,9 @@ Some of the best links used during this learning journey. Thanks to all
 
 [Docker in raspberry pi](https://blog.alexellis.io/5-things-docker-rpi/)
 
+[Arduino power mode explained](https://aprendiendoarduino.wordpress.com/2016/11/16/arduino-sleep-mode/)
+
+[ATmega328-328P_Datasheet](http://www.atmel.com/Images/Atmel-42735-8-bit-AVR-Microcontroller-ATmega328-328P_Datasheet.pdf)
 
 
 # TODO LIST
