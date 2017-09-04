@@ -21,9 +21,9 @@ int btem::send(char *text) {
 return 0;
 }
 
-int btem::send(float t,float h) {
-  bt->print("{\"id\":\"");
-  bt->print("TODO");
+int btem::send(unsigned int id,float t,float h) {
+  bt->print("{\"Id\":\"");
+  bt->print(id);
   bt->print("\",\"status\":\"");
   bt->print("OK");
   bt->print("\",\"data\":{\"t\":\"");

@@ -13,7 +13,7 @@ class btem
   btem();
   int setup(unsigned int rx,unsigned int tx);
   int send(char *text);
-  int send(float t,float h);
+  int send(unsigned int id,float t,float h);
   int sendKO();
   void refresh();
 
