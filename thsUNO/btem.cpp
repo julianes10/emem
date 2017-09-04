@@ -22,7 +22,7 @@ return 0;
 }
 
 int btem::send(unsigned int id,float t,float h) {
-  bt->print("{\"Id\":\"");
+  bt->print("{\"id\":\"id");
   bt->print(id);
   bt->print("\",\"status\":\"");
   bt->print("OK");
@@ -36,8 +36,9 @@ int btem::send(unsigned int id,float t,float h) {
 return 0; //TODO
 }
 
-int btem::sendKO() {
-  bt->print("{\"id\":\"");
+int btem::sendKO(unsigned int id) {
+  bt->print("{\"id\":\"id");
+  bt->print(id);
   bt->print("\",\"status\":\"");
   bt->print("KO");
   bt->println("\"}");
