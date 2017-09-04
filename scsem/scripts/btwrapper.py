@@ -29,6 +29,9 @@ class btWrapper():
         internalLogger.info("Try to reconnect btmac: {0} to port: {1}".format(self.mac,self.port))
         aux=subprocess.check_output([EMEM_DEPLOY_DIR+'/scsem/scripts/bindBTmac.sh',self.mac,'verbose'])      
         internalLogger.debug("Bind script output:" + aux)
+      except CalledProcessError as e:
+        internalLogger.debug("Bind script return error {0} {1}".format(e.returncode, e.message))
+        return
       except KeyboardInterrupt:
         print("Ok ok, quitting")
         sys.exit(1)
@@ -36,7 +39,7 @@ class btWrapper():
         e = sys.exc_info()[0]
         internalLogger.error('Unexpected error binding to btmac. It will be retried later.')
         einternalLogger.exception(e)  
-        time.sleep(5)
+        time.sleep(30)
         return
      
       try:
@@ -56,7 +59,7 @@ class btWrapper():
         internalLogger.error('Unexpected error accesing to serial port. It will be retried later.')
         einternalLogger.exception(e)  
         self.ser=None
-        time.sleep(5)
+        time.sleep(30)
 
 
     def getData(self):

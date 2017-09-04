@@ -16,7 +16,7 @@ from localdhtwrapper import *
 SensorsDirectory ={
   "Atico":     	{ "devType":"BT",
                   "btmac":"98:D3:32:20:FB:90","port":"/dev/rfcomm0",
-                  "subnames": { 'TODO': "Terraza Interior", 'Id2':"Terraza Exterior"}
+                  "subnames": { '1': "Terraza Interior", '2':"Terraza Exterior"}
                 },
 #  "Dormitorio": { "devType":"BT","port":"/dev/rfcomm0","ITEM":1},
   "Cocina":     { "devType":"LOCAL","gpio":4}
