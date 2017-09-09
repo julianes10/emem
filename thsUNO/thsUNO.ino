@@ -105,7 +105,7 @@ void loop() {
        delay(500);
        tone(piezoPin, 1000, 200);
        //TODO if problem persists in N loops maybe is worthy a reset?
-       myBT.sendKO(i);
+       myBT.sendKO(i+1);
      }
      else {
        float t=mythSensor[i].getTemperature();
