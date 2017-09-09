@@ -47,6 +47,7 @@ def main(host='localhost', port=8086,lc=False):
       if item['devType'] == "BT":
            internalLogger.debug("Creating BT object handler...")
            x=btWrapper(key,item,speed=9600,timeout=20)
+           x.tryReconnect()
       elif item['devType'] == "LOCAL":
            internalLogger.debug("Creating local DHT object handler...")
            x=localDhtWrapper(key,item)
@@ -63,7 +64,7 @@ def main(host='localhost', port=8086,lc=False):
 
   except Exception as e:
     e = sys.exc_info()[0]
-    internalLogger.critical('Error: Exception unprocess properly. Exiting')
+    internalLogger.critical('Error: Exception unprocessed properly. Exiting')
     einternalLogger.exception(e)  
     print('SCSEM-General exeception captured. See ssms.log:{0}',format(LOGFILE_DEV))        
       

@@ -21,17 +21,16 @@ class btWrapper():
       if 'subnames' in d:
         self.subnames=d['subnames']
       self.name2db=key
-      self.tryReconnect()
 
     def tryReconnect(self):
       self.ser=None
       try:
         internalLogger.info("Try to reconnect btmac: {0} to port: {1}".format(self.mac,self.port))
         aux=subprocess.check_output([EMEM_DEPLOY_DIR+'/scsem/scripts/bindBTmac.sh',self.mac,'verbose'])      
-        internalLogger.debug("Bind script output:" + aux)
-      except CalledProcessError as e:
-        internalLogger.debug("Bind script return error {0} {1}".format(e.returncode, e.message))
-        return
+        internalLogger.debug("Bind script output:" + aux)    
+      except subprocess.CalledProcessError as e:
+        internalLogger.debug("Bind script return error {0} {1}.".format(e.returncode, e.message))
+        return False
       except KeyboardInterrupt:
         print("Ok ok, quitting")
         sys.exit(1)
@@ -39,9 +38,8 @@ class btWrapper():
         e = sys.exc_info()[0]
         internalLogger.error('Unexpected error binding to btmac. It will be retried later.')
         einternalLogger.exception(e)  
-        time.sleep(30)
-        return
-     
+        return False
+      internalLogger.info("Device visible {0} now trying setup serial interface towards it...".format(self.mac))
       try:
         internalLogger.info("Try open serial port:" + self.port)
         self.ser = serial.Serial(
@@ -59,15 +57,21 @@ class btWrapper():
         internalLogger.error('Unexpected error accesing to serial port. It will be retried later.')
         einternalLogger.exception(e)  
         self.ser=None
-        time.sleep(30)
+        return False
+      return True
 
 
     def getData(self):
       internalLogger.debug("Getting data from bt {0}...".format(self.port))
-      if self.ser == None:
-        self.tryReconnect()
-        if self.ser == None: # still...
-          return None
+      #Check ser status
+      if self.ser==None:
+        if self.tryReconnect():
+           internalLogger.error('Serial line ready to be read.')
+        else:
+           internalLogger.error('Serial line is not seem to be read.') 
+           time.sleep(60)
+           return None;
+          
       line=None     
       data=None
       i=0

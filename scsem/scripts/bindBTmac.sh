@@ -1,13 +1,16 @@
-#!/bin/sh 
+#!/bin/bash 
 #args: $1(BTMAC) [$2 verbose]
 
 echo "Here we go $@"
 
 
 hcitool scan | grep $1
-aux=echo $?
+aux=$?
 
-if [ ! $aux eq 0 ];then
+if [ $aux = 0 ]; then
+  echo "Scannner detected to $1"
+else
+  echo "Scannner NOT detected to $1. But $echo. Exiting..."
   exit 1
 fi
 
