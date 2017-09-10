@@ -26,6 +26,8 @@ int piezoPin = 7;
 // BT to report data
 const int datapinRxBT = 10;
 const int datapinTxBT = 11;
+const int vccpinBT = 12;
+
 btem myBT;
 
 
@@ -72,7 +74,7 @@ void setup() {
   }
   
   Serial.println("Setup BT HC05...");
-  if (myBT.setup(datapinRxBT,datapinTxBT)!=0) {
+  if (myBT.setup(vccpinBT,datapinRxBT,datapinTxBT)!=0) {
     Serial.print("Failing BT setup on pins:RX:");
     Serial.print(datapinRxBT);
     Serial.print("-TX:");
@@ -95,15 +97,18 @@ void loop() {
  
  if (aliveLoopCounter%8 == 0)
  {
+   myBT.powerOn();
    //Sending data 1 every minute more or less
    for (int i=0;i<MAX_SENSORS;i++)
    {
      if (mythSensor[i].refresh()!=0){
        Serial.println("Error reading DHT sensor");
        myLed.hello();
-       tone(piezoPin, 1000, 200);
-       delay(500);
-       tone(piezoPin, 1000, 200);
+       if (i==0) {
+         tone(piezoPin, 1000, 200);
+         delay(500);
+         tone(piezoPin, 1000, 200);
+       }
        //TODO if problem persists in N loops maybe is worthy a reset?
        myBT.sendKO(i+1);
      }
@@ -126,7 +131,9 @@ void loop() {
  }
  Serial.print(aliveLoopCounter++);
  Serial.println(" ... and still alive, let's power done 8 secs..");
- LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF); 
+ myBT.powerOff();
+ LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
+ 
 }
 
 
