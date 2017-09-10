@@ -11,7 +11,7 @@ if [ $aux = 0 ]; then
   echo "Scannner detected to $1"
 else
   echo "Scannner NOT detected to $1. But $echo. Exiting..."
-  exit 1
+##  #exit 1
 fi
 
 reportStatus ()

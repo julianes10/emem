@@ -69,69 +69,54 @@ class btWrapper():
            internalLogger.error('Serial line ready to be read.')
         else:
            internalLogger.error('Serial line is not seem to be read.') 
-           time.sleep(60)
+           time.sleep(10)
            return None;
           
       line=None     
       data=None
       i=0
-      while line==None and i<2:
-        i=i+1
+      while True:
         try:
           line = self.ser.readline()
-          internalLogger.debug("Got line, cool")
-          break
         except KeyboardInterrupt:
           print("Ok ok, quitting")
           sys.exit(1)
         except Exception as e:
           e = sys.exc_info()[0]
-          internalLogger.error('Unexpected error reading line from remote serial bt device. Trying to reconnect')
-          einternalLogger.exception(e)  
-          self.tryReconnect()
-
-      internalLogger.debug("Checking line value...")
-      if line is not None: 
-        try:
-          internalLogger.debug("Something read yeah...:" + line)
-          json_acceptable_string = line.replace("'", "\"")
-          d = json.loads(json_acceptable_string)
-          #One line per dht
-
-          if d['status'] == "OK":
-            id2use=self.name2db
-            internalLogger.info("Sensor '{0}'-'{1}' OK Temperature:{2}".format(self.name2db,d['id'],d['data']['t']))
-            if self.subnames != None:
-              #Check id's are expected ones
-              if not d['id'] in self.subnames:
-                internalLogger.critical("Unrecognized id: {0}. Expected: {1}. Discarded".format(d['id'],self.subnames))
-                return None
+          internalLogger.error('Unexpected error reading line from remote serial bt device.')
+          einternalLogger.exception(e)
+          self.ser=None
+          return data
+        internalLogger.debug("Got line, cool")                  
+        if line is not None: 
+            try:
+              internalLogger.debug("Something read yeah...:" + line)
+              json_acceptable_string = line.replace("'", "\"")
+              d = json.loads(json_acceptable_string)
+              # One line per dht
+              if d['status'] == "OK":
+                id2use=self.name2db
+                internalLogger.info("Sensor '{0}'-'{1}' OK Temperature:{2}".format(self.name2db,d['id'],d['data']['t']))
+                if self.subnames != None:
+                  #Check id's are expected ones
+                  if not d['id'] in self.subnames:
+                    internalLogger.critical("Unrecognized id: {0}. Expected: {1}. Discarded".format(d['id'],self.subnames))
+                    continue
+                  else:
+                    id2use= self.subnames[d['id']]
+                    data= [
+                      {"measurement": "temperature","tags": {"sensor": id2use},"fields": {"value": float(d['data']['t'])}},
+                      {"measurement": "humidity",   "tags": {"sensor": id2use},"fields": {"value": float(d['data']['h'])}}]
+                    return data
               else:
-                id2use= self.subnames[d['id']]
-            data= [{
-              "measurement": "temperature",
-              "tags": {
-                  "sensor": id2use,
-              },
-              "fields": {
-                  "value": float(d['data']['t']),
-              }},
-              {
-              "measurement": "humidity",
-              "tags": {
-                  "sensor": id2use,
-              },
-              "fields": {
-                  "value": float(d['data']['h']),
-              }}] 
-          else:
-            internalLogger.debug("Sensor KO")          
-        except Exception as e:
-          internalLogger.debug("Error processing line as json, ignoring it")
-          e = sys.exc_info()[0]
-          einternalLogger.exception(e)  
-      else:
-        internalLogger.debug("No data available on serial BT...:")
+                internalLogger.debug("Sensor KO")
+                continue
+            except Exception as e:
+              internalLogger.debug("Error processing line as json, ignoring it")
+              e = sys.exc_info()[0]
+              einternalLogger.exception(e)  
+        else:
+            internalLogger.debug("No data available on serial BT yet...:")
 
-      return data
+      
 
