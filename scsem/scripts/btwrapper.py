@@ -107,9 +107,13 @@ class btWrapper():
                     data= [
                       {"measurement": "temperature","tags": {"sensor": id2use},"fields": {"value": float(d['data']['t'])}},
                       {"measurement": "humidity",   "tags": {"sensor": id2use},"fields": {"value": float(d['data']['h'])}}]
+                    self.ser.write("30\n")
+                    self.ser.flush()
                     return data
               else:
                 internalLogger.debug("Sensor KO")
+                self.ser.write("20\n")
+                self.ser.flush()
                 continue
             except Exception as e:
               internalLogger.debug("Error processing line as json, ignoring it")
