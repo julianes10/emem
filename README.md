@@ -8,11 +8,12 @@ This project consist of:
 
 ## thsUNO
 
-Prototype to show up 
+Prototype to learn and play
 
-## thsnano
+## thsNANO
 
-Here it is, and load with a usb mini cable...
+The real used sensor low power consumption device up to 2 DHT-22 sensors and one HC-05 device
+
 
 ## scsem 
 
@@ -37,7 +38,7 @@ Alternative working in ubuntu
 sudo hcitool cc 98:D3:32:20:FB:90  //connect
 sudo hcitool cc 98:D3:32:20:FB:90  //disconnect
 
-If you have problems with setting up the pin, you can force in: sudo su,  echo "zzzzzz 1234" >/dev/lib/bluetooth/xxxxx/pincodes   xxxx is host mac bt address and zzzz mac bt address of dht 
+If you have problems with setting up the pin, you can force in: sudo su,  echo "zzzzzz 1234" >/var/lib/bluetooth/xxxxx/pincodes   xxxx is host mac bt address and zzzz mac bt address of dht 
 https://myraspberryandme.wordpress.com/2013/11/20/bluetooth-serial-communication-with-hc-05/
 
 In this project, bindBTmac.sh is used to setup. It is launched by collectorMain.py.
