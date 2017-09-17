@@ -74,7 +74,7 @@ void setup() {
   }
   
   Serial.println("Setup BT HC05...");
-  if (myBT.setup(vccpinBT,datapinRxBT,datapinTxBT)!=0) {
+  if (myBT.setup(vccpinBT,datapinRxBT,datapinTxBT,10)!=0) {
     Serial.print("Failing BT setup on pins:RX:");
     Serial.print(datapinRxBT);
     Serial.print("-TX:");
@@ -92,10 +92,11 @@ void setup() {
 //--------- LOOP  FUNCTION ------------
 //-------------------------------------
 void loop() {
-
+ int newTimer=0;  
+  
  myLed.alive();
  
- if (aliveLoopCounter%8 == 0)
+ if (aliveLoopCounter%1 == 0)
  {
    myBT.powerOn();
    //Sending data 1 every minute more or less
@@ -110,7 +111,14 @@ void loop() {
          tone(piezoPin, 1000, 200);
        }
        //TODO if problem persists in N loops maybe is worthy a reset?
-       myBT.sendKO(i+1);
+       newTimer=myBT.sendKO(i+1);
+       Serial.print("New timer received:");
+       Serial.println(newTimer);
+       if (newTimer<=0) {
+         //TODO if problem persists in N loops maybe is worthy a reset?
+         myLed.hello();
+         //tone(piezoPin, 2000, 1000); //TODO remove
+       }
      }
      else {
        float t=mythSensor[i].getTemperature();
@@ -121,7 +129,10 @@ void loop() {
        Serial.print(t);
        Serial.print(" Celsius. Humidity(%):");
        Serial.println(h);
-       if (myBT.send(i+1,t,h)!=0) {
+       newTimer=myBT.sendWaitNewPeriod(i+1,t,h);
+       Serial.print("New timer received:");
+       Serial.println(newTimer);
+       if (newTimer<=0) {
          //TODO if problem persists in N loops maybe is worthy a reset?
          myLed.hello();
          tone(piezoPin, 2000, 1000); //TODO remove

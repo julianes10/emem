@@ -11,9 +11,11 @@ class btem
  public:
 
   btem();
-  int setup(unsigned int v,unsigned int rx,unsigned int tx);
+  int setup(unsigned int rx,unsigned int tx,unsigned int toutsec);
+  int setup(unsigned int v,unsigned int rx,unsigned int tx,unsigned int toutsec);
   int send(char *text);
   int send(unsigned int id,float t,float h);
+  int sendWaitNewPeriod(unsigned int id,float t,float h);
   int sendKO(unsigned int id);
   void refresh();
   void powerOn();
@@ -21,7 +23,7 @@ class btem
 
  private:
   SoftwareSerial *bt;
-  unsigned int vcc;
+  int vcc;
  
 };
 

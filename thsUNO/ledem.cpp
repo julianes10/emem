@@ -13,7 +13,7 @@ void ledem::setup(unsigned int datapin)
   led=datapin;
 }
 void ledem::hello() {
-  for (int i=0;i<5;i++){
+  for (int i=0;i<1;i++){
    digitalWrite(led, HIGH);  
    delay(250);               
    digitalWrite(led, LOW);  
