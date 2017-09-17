@@ -18,7 +18,7 @@ SensorsDirectory ={
                   "btmac":"98:D3:32:20:FB:90","port":"/dev/rfcomm0",
                   "subnames": { 'id1': "Terraza Interior", 'id2':"Terraza Exterior"}
                 },
-#  "Dormitorio": { "devType":"BT","port":"/dev/rfcomm0","ITEM":1},
+  "Dormitorio": { "devType":"BT","btmac":"00:21:13:01:0B:50","port":"/dev/rfcomm1"},
   "Cocina":     { "devType":"LOCAL","gpio":4}
   }
 
