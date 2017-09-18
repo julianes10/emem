@@ -104,12 +104,12 @@ class btWrapper():
                     continue
                   else:
                     id2use= self.subnames[d['id']]
-                    data= [
+                data= [
                       {"measurement": "temperature","tags": {"sensor": id2use},"fields": {"value": float(d['data']['t'])}},
                       {"measurement": "humidity",   "tags": {"sensor": id2use},"fields": {"value": float(d['data']['h'])}}]
-                    self.ser.write("30\n")
-                    self.ser.flush()
-                    return data
+                self.ser.write("30\n")
+                self.ser.flush()
+                return data
               else:
                 internalLogger.debug("Sensor KO")
                 self.ser.write("20\n")
