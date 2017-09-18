@@ -1,5 +1,5 @@
 #!/bin/bash 
-#args: $1(BTMAC) [$2 verbose]
+#args: $1(BTMAC) $2(dev file) [$3 verbose]
 
 echo "Here we go $@"
 
@@ -20,19 +20,19 @@ reportStatus ()
 #  sudo tree /var/lib/bluetooth/*/$2
 }
 
-if [ "$2" = "verbose" ]; then
+if [ "$3" = "verbose" ]; then
   echo "Status before binding:"
   reportStatus
 fi
 
-sudo rfcomm release hci0 $1
-if [ "$2" = "verbose" ]; then
+sudo rfcomm release $2
+if [ "$3" = "verbose" ]; then
   echo "Status after releasing:"
   reportStatus
 fi
 
-sudo rfcomm bind hci0 $1 1
-if [ "$2" = "verbose" ]; then
+sudo rfcomm bind $2 $1 1
+if [ "$3" = "verbose" ]; then
   echo "Status after binding:"
   reportStatus
 fi

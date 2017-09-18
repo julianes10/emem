@@ -26,7 +26,7 @@ class btWrapper():
       self.ser=None
       try:
         internalLogger.info("Try to reconnect btmac: {0} to port: {1}".format(self.mac,self.port))
-        aux=subprocess.check_output([EMEM_DEPLOY_DIR+'/scsem/scripts/bindBTmac.sh',self.mac,'verbose'])      
+        aux=subprocess.check_output([EMEM_DEPLOY_DIR+'/scsem/scripts/bindBTmac.sh',self.mac,self.port,'verbose'])      
         internalLogger.debug("Bind script output:" + aux)    
       except subprocess.CalledProcessError as e:
         internalLogger.debug("Bind script return error {0} {1}.".format(e.returncode, e.message))
