@@ -69,6 +69,8 @@ Some of the best links used during this learning journey. Thanks to all
 
 [ATmega328-328P_Datasheet](http://www.atmel.com/Images/Atmel-42735-8-bit-AVR-Microcontroller-ATmega328-328P_Datasheet.pdf)
 
+[Json on line validator](https://jsonlint.com/)
+
 
 # TODO LIST
 - Maybe i should create a docker image for thscollector dividing it in two part one per bt access and other pure ip and process so that deploy will be smarter and out of python deps

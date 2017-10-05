@@ -13,26 +13,23 @@ from dbwrapper import *
 from btwrapper import *
 from localdhtwrapper import *
 
-SensorsDirectory ={
-  "Atico":     	{ "devType":"BT",
-                  "btmac":"98:D3:32:20:FB:90","port":"/dev/rfcomm0",
-                  "subnames": { 'id1': "Terraza Interior", 'id2':"Terraza Exterior"}
-                },
-  "Dormitorio": { "devType":"BT","btmac":"00:21:13:01:0B:50","port":"/dev/rfcomm1"},
-  "Cocina":     { "devType":"LOCAL","gpio":4}
-  }
-
-
-
-
+configuration={}
 
 '''----------------------------------------------------------'''
 '''----------------       M A I N         -------------------'''
 '''----------------------------------------------------------'''
 
-def main(host='localhost', port=8086,lc=False):
+def main(host, port,lc,configfile):
   print('SCSEM-start -----------------------------')   
-  internalLogger.critical('SCSEM-start -----------------------------')        
+  internalLogger.critical('SCSEM-start -----------------------------')  
+
+  # Loading config file
+
+  with open(configfile) as json_data:
+    configuration = json.load(json_data)
+    print(configuration)
+  SensorsDirectory = configuration["Sensors"]
+        
 
   if lc==True:
       launchContainers()
@@ -110,12 +107,17 @@ def parse_args():
     """Parse the args."""
     parser = argparse.ArgumentParser(
         description='Sensor data collector')
+    parser.add_argument('--configfile', type=str, required=False,
+                        default='/etc/emem/scsem.conf',
+                        help='Config file for scsem emem service')
     parser.add_argument('--dbhost', type=str, required=False,
                         default='localhost',
                         help='hostname of InfluxDB http API')
-    parser.add_argument('--dbport', type=int, required=False, default=8086,
+    parser.add_argument('--dbport', type=int, required=False, 
+                        default=8086,
                         help='port of InfluxDB http API')
-    parser.add_argument("-l","--launchContainers", action="store_true",
+    parser.add_argument("-l","--launchContainers", 
+                        action="store_true",
                         help='launch influxdb and grafana containers at startup')
 
     return parser.parse_args()
@@ -133,4 +135,4 @@ def printPlatformInfo():
 if __name__ == '__main__':
     printPlatformInfo()
     args = parse_args()
-    main(host=args.dbhost, port=args.dbport,lc=args.launchContainers)
+    main(host=args.dbhost, port=args.dbport,lc=args.launchContainers,configfile=args.configfile)
