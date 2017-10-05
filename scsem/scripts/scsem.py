@@ -24,15 +24,36 @@ def main(host, port,lc,configfile):
   internalLogger.critical('SCSEM-start -----------------------------')  
 
   # Loading config file
+  try:
+    with open(configfile) as json_data:
+      configuration = json.load(json_data)
 
-  with open(configfile) as json_data:
-    configuration = json.load(json_data)
-    print(configuration)
-  SensorsDirectory = configuration["Sensors"]
-        
+    #Get sensors list
+    SensorsDirectory = configuration["Sensors"]
+    #Override args if available in config file
+    if "launchContainers" in configuration:
+      lc = configuration["launchContainers"]
+    if "DataBase" in configuration:
+      if "dbhost" in configuration["DataBase"]:
+        host = configuration["DataBase"]["dbhost"]
+      if "dbport" in configuration["DataBase"]:
+        port = configuration["DataBase"]["dbport"]
+    if "BluetoothSettings" in configuration:
+      if "isBtEnabled" in configuration["BluetoothSettings"]:
+        isBtEnabled = configuration["BluetoothSettings"]["isBtEnabled"]
+        if not isBtEnabled:
+          internalLogger.warning("Bluetooth devices are not enabled this time in config.")
+      if "retryTimeSeconds" in configuration["BluetoothSettings"]:
+        retryTimeSeconds = configuration["BluetoothSettings"]["retryTimeSeconds"]
+
+  except Exception as e:
+    internalLogger.critical("Error processing configuration json {0} file. Exiting".format(configfile))
+    einternalLogger.exception(e)
+    loggingEnd()
+    return  
 
   if lc==True:
-      launchContainers()
+     launchContainers()
 
   try:    
     hdlDB=dbWrapper(host, port,
@@ -42,8 +63,11 @@ def main(host, port,lc,configfile):
 
     for key,item in SensorsDirectory.items():
       if item['devType'] == "BT":
+           if not isBtEnabled:
+             internalLogger.debug("Skipping creating BT object handler, bluethooth devices are disabled.")
+             continue            
            internalLogger.debug("Creating BT object handler...")
-           x=btWrapper(key,item,speed=9600,timeout=20)
+           x=btWrapper(key,item,speed=9600,timeout=retryTimeSeconds)
            x.tryReconnect()
       elif item['devType'] == "LOCAL":
            internalLogger.debug("Creating local DHT object handler...")
@@ -64,7 +88,12 @@ def main(host, port,lc,configfile):
     internalLogger.critical('Error: Exception unprocessed properly. Exiting')
     einternalLogger.exception(e)  
     print('SCSEM-General exeception captured. See ssms.log:{0}',format(LOGFILE_DEV))        
-      
+    loggingEnd()
+
+
+'''----------------------------------------------------------'''
+'''----------------       loggingEnd      -------------------'''
+def loggingEnd():      
   internalLogger.critical('SCSEM-end -----------------------------')        
   print('SCSEM-end -----------------------------')
 

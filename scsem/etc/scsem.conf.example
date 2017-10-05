@@ -1,0 +1,19 @@
+{
+  "launchContainers" : false,
+  "DataBase" : {
+      "dbhost" : "localhost",
+      "dbport" : 8754
+  },
+  "BluetoothSettings" : {
+      "isBtEnabled" : false,
+      "retryTimeSeconds"     : 300
+  },
+  "Sensors" : {
+      "Room1":  {   "devType":"BT",
+                    "btmac":"89:32:32:20:FB:90","port":"/dev/rfcomm0",
+                    "subnames": { "id1": "Inside", "id2":"Outside"}
+                },
+      "Room2": { "devType":"BT","btmac":"00:12:13:01:0B:50","port":"/dev/rfcomm1"},
+      "Room3":     { "devType":"LOCAL","gpio":4}
+  }
+}

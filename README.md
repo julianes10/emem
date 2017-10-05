@@ -74,14 +74,15 @@ Some of the best links used during this learning journey. Thanks to all
 
 # TODO LIST
 - Maybe i should create a docker image for thscollector dividing it in two part one per bt access and other pure ip and process so that deploy will be smarter and out of python deps
-- pass dict with definitions to a yaml, upload an example but keeps our out of github just for a bit privacy
-- echo to bluetooth'ers
-- try nano with dht including easy on pin vcc
-- try more than one bluethoot, still big doubts about how to setup rfcom stuff and take decision over main id for devices/sensors
-- play with grafana to show more than one sensor
 - rotate logs and make it configurable ? or input args?
-- try more than one dht on arduino
-- battery stuff 
+- mostfed stuff
+- battery stuff, hw and battery life show up in graphana
+- other approach for dababase more generic not only one temperature item but 
+- logfile names configurable, put in tmpfs
+- ports of containers configurable
+- database and grafana var lib out of repo path and maybe in tmpfs
+
+
 
 
 

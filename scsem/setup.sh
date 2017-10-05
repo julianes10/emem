@@ -4,6 +4,13 @@
 DEPLOY_FOLDER=/home/pi/emem
 
 echo "This script will install in your pi a service scsem from $DEPLOY_FOLDER usign systemctl utility"
+if [ ! -f /etc/emem/scsem.conf]; then
+  echo "Taking config file example as configuration file in /etc/emem/, please review it and restart the service"
+  sudo cp -rf etc/scsem.conf.example /etc/emem/scsem.conf
+else
+  echo "Keeping existing configuration file in /etc/emem/. Only updating example one"
+  sudo cp -rf etc/scsem.conf.example /etc/emem/
+fi 
 sudo cp -rf scsem.service /lib/systemd/system/scsem.service
 sudo chmod 644 /lib/systemd/system/scsem.service
 chmod +x ./scripts/scsem.py
