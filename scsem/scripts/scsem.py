@@ -7,8 +7,9 @@ import subprocess
 import os
 import platform
 import threading
+import helper
 
-from collectorCommon import *
+from helper import *
 from dbwrapper import *
 from btwrapper import *
 from localdhtwrapper import *
@@ -21,59 +22,77 @@ configuration={}
 
 def main(host, port,lc,configfile):
   print('SCSEM-start -----------------------------')   
-  internalLogger.critical('SCSEM-start -----------------------------')  
 
-  # Loading config file
-  try:
-    with open(configfile) as json_data:
+  # Loading config file,
+  # Default values
+  cfg_log_traces="scsem.log"
+  cfg_log_exceptions="scseme.log"
+  cfg_SensorsDirectory={}
+  cfg_lc=lc
+  cfg_database_dbhost=host
+  cfg_database_dbport=port
+  cfg_bt_enable=True
+  cfg_bt_retryTimeSeconds=20
+  # Let's fetch data
+  with open(configfile) as json_data:
       configuration = json.load(json_data)
-
+  #Get log names
+  if "log" in configuration:
+      if "logTraces" in configuration["log"]:
+        cfg_log_traces = configuration["log"]["logTraces"]
+      if "logExceptions" in configuration["log"]:
+        cfg_log_exceptions = configuration["log"]["logExceptions"]
+  helper.init(cfg_log_traces,cfg_log_exceptions)
+  print('See logs traces in: {0} and exeptions in: {1}-----------'.format(cfg_log_traces,cfg_log_exceptions))  
+  helper.internalLogger.critical('SCSEM-start -------------------------------')  
+  helper.einternalLogger.critical('SCSEM-start -------------------------------')
+  try:
     #Get sensors list
-    SensorsDirectory = configuration["Sensors"]
+    cfg_SensorsDirectory = configuration["Sensors"]
     #Override args if available in config file
     if "launchContainers" in configuration:
-      lc = configuration["launchContainers"]
+      cfg_lc = configuration["launchContainers"]
     if "DataBase" in configuration:
       if "dbhost" in configuration["DataBase"]:
-        host = configuration["DataBase"]["dbhost"]
+        cfg_database_host = configuration["DataBase"]["dbhost"]
       if "dbport" in configuration["DataBase"]:
-        port = configuration["DataBase"]["dbport"]
+        cfg_database_port = configuration["DataBase"]["dbport"]
     if "BluetoothSettings" in configuration:
       if "isBtEnabled" in configuration["BluetoothSettings"]:
-        isBtEnabled = configuration["BluetoothSettings"]["isBtEnabled"]
-        if not isBtEnabled:
-          internalLogger.warning("Bluetooth devices are not enabled this time in config.")
+        cfg_bt_enabled = configuration["BluetoothSettings"]["isBtEnabled"]
+        if not cfg_bt_enabled:
+          helper.internalLogger.warning("Bluetooth devices are not enabled this time in config.")
       if "retryTimeSeconds" in configuration["BluetoothSettings"]:
-        retryTimeSeconds = configuration["BluetoothSettings"]["retryTimeSeconds"]
+        cfg_bt_retryTimeSeconds = configuration["BluetoothSettings"]["retryTimeSeconds"]
 
   except Exception as e:
-    internalLogger.critical("Error processing configuration json {0} file. Exiting".format(configfile))
-    einternalLogger.exception(e)
+    helper.internalLogger.critical("Error processing configuration json {0} file. Exiting".format(configfile))
+    helper.einternalLogger.exception(e)
     loggingEnd()
     return  
 
-  if lc==True:
+  if cfg_lc==True:
      launchContainers()
 
   try:    
-    hdlDB=dbWrapper(host, port,
+    hdlDB=dbWrapper(cfg_database_host, cfg_database_port,
                     user = 'root',password = 'root',
                     dbname = 'db_emem',
                     dbuser = 'user_emem', dbpss = 'emem') 
 
-    for key,item in SensorsDirectory.items():
+    for key,item in cfg_SensorsDirectory.items():
       if item['devType'] == "BT":
-           if not isBtEnabled:
-             internalLogger.debug("Skipping creating BT object handler, bluethooth devices are disabled.")
+           if not cfg_bt_enabled:
+             helper.internalLogger.debug("Skipping creating BT object handler, bluethooth devices are disabled.")
              continue            
-           internalLogger.debug("Creating BT object handler...")
-           x=btWrapper(key,item,speed=9600,timeout=retryTimeSeconds)
+           helper.internalLogger.debug("Creating BT object handler...")
+           x=btWrapper(key,item,speed=9600,timeout=cfg_bt_retryTimeSeconds)
            x.tryReconnect()
       elif item['devType'] == "LOCAL":
-           internalLogger.debug("Creating local DHT object handler...")
+           helper.internalLogger.debug("Creating local DHT object handler...")
            x=localDhtWrapper(key,item)
       else:
-           internalLogger.error("Unknown sensor device type, ignoring it")
+           helper.internalLogger.error("Unknown sensor device type, ignoring it")
            continue
       item['handler']=x
       sensorTask=threading.Thread(target=sensor_task,args=(key,item,hdlDB,),name=key)
@@ -85,16 +104,16 @@ def main(host, port,lc,configfile):
 
   except Exception as e:
     e = sys.exc_info()[0]
-    internalLogger.critical('Error: Exception unprocessed properly. Exiting')
-    einternalLogger.exception(e)  
-    print('SCSEM-General exeception captured. See ssms.log:{0}',format(LOGFILE_DEV))        
+    helper.internalLogger.critical('Error: Exception unprocessed properly. Exiting')
+    helper.einternalLogger.exception(e)  
+    print('SCSEM-General exeception captured. See ssms.log:{0}',format(cfg_log_exceptions))        
     loggingEnd()
 
 
 '''----------------------------------------------------------'''
 '''----------------       loggingEnd      -------------------'''
 def loggingEnd():      
-  internalLogger.critical('SCSEM-end -----------------------------')        
+  helper.internalLogger.critical('SCSEM-end -----------------------------')        
   print('SCSEM-end -----------------------------')
 
 
@@ -102,16 +121,16 @@ def loggingEnd():
 '''----------------       launchContainers-------------------'''
 def launchContainers():
       try:
-        internalLogger.info("Relaunching containers...")
+        helper.internalLogger.info("Relaunching containers...")
         p=subprocess.Popen([EMEM_DEPLOY_DIR+'/scsem/scripts/launchContainers.sh','verbose'])      
-        internalLogger.debug("Script for launching container started  with popen:")
+        helper.internalLogger.debug("Script for launching container started  with popen:")
       except KeyboardInterrupt:
         print("Ok ok, quitting")
         sys.exit(1)
       except Exception as e:
         e = sys.exc_info()[0]
-        internalLogger.error('Unexpected error launching containers. Not recovery so far TODO.')
-        einternalLogger.exception(e)  
+        helper.internalLogger.error('Unexpected error launching containers. Not recovery so far TODO.')
+        helper.einternalLogger.exception(e)  
         time.sleep(5)
         sys.exit(1)
 '''----------------------------------------------------------'''
@@ -119,7 +138,7 @@ def launchContainers():
 def sensor_task(key,item,hdlDB):
   while True:
     data=None
-    internalLogger.debug("Gathering data from sensor '{0}'".format(key))
+    helper.internalLogger.debug("Gathering data from sensor '{0}'".format(key))
     data = item['handler'].getData()
     # Insert in DB 
     if data is not None:

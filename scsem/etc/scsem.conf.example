@@ -1,5 +1,6 @@
 {
   "launchContainers" : false,
+  "ememDeployDir":"/opt/emem",
   "DataBase" : {
       "dbhost" : "localhost",
       "dbport" : 8754
@@ -7,6 +8,9 @@
   "BluetoothSettings" : {
       "isBtEnabled" : false,
       "retryTimeSeconds"     : 300
+  },
+  "log": { "logTraces":"/tmp/scsem.log",
+           "logExceptions":"/tmp/scseme.log"
   },
   "Sensors" : {
       "Room1":  {   "devType":"BT",

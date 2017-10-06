@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
 import os
-from collectorCommon import *
+import helper
 '''----------------------------------------------------------'''
 '''---------------- class bluethoot dht22 wrapper------------'''
 class localDhtWrapper:
@@ -11,17 +11,17 @@ class localDhtWrapper:
       self.name2db=key
    
     def getData(self):
-      if not amIaPi():
-        internalLogger.info("No arm (pi) architecture detected. Ignoring sensor")
+      if not helper.amIaPi():
+        helper.internalLogger.info("No arm (pi) architecture detected. Ignoring sensor")
         return None
       
       import Adafruit_DHT
       
-      internalLogger.debug("Getting data from local dht22 on pin {0}...".format(self.gpio))
+      helper.internalLogger.debug("Getting data from local dht22 on pin {0}...".format(self.gpio))
       humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.DHT22, self.gpio)
       data=None
       if humidity is not None and temperature is not None:
-        internalLogger.info("Sensor '{0}' OK Temperature:{1}".format(self.name2db,temperature))
+        helper.internalLogger.info("Sensor '{0}' OK Temperature:{1}".format(self.name2db,temperature))
         data= [{
               "measurement": "temperature",
               "tags": {
@@ -39,7 +39,7 @@ class localDhtWrapper:
                   "value": float(humidity),
               }}] 
       else:
-        internalLogger.debug("No data available on local dht22..:")
+        helper.internalLogger.debug("No data available on local dht22..:")
 
       return data
 
