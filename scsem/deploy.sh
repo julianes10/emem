@@ -1,5 +1,6 @@
 #!/bin/bash 
 # Deploy and setup release into pi system
+source ./commonvars.sh
 PI_USER=pi
 PI_IPNAME=omegastar.ddns.net
 PI_PORT=5555
@@ -11,11 +12,11 @@ usage(){
 }
 rt=55
 
+echo "This script will deploy software in your system in your pi a service scsem from $DEPLOY_FOLDER usign systemctl utility. No arguments required. Run it being root or with sudo"
+if [ "$1" == "-h" -o "$1" == "--help" ]; then
+  exit 0
+fi
 
-DEPLOY_FOLDER=/home/pi/emem
-
-
-echo "This script will deploy software in your pi"
 
 aux="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 echo "Check that your current directory '$aux' is not deploy one $DEPLOY_FOLDER/scsem..."
@@ -25,7 +26,12 @@ if [ "$aux" == "$DEPLOY_FOLDER/scsem/" ]; then
 fi
 
 echo "Check the options and deploy folder '$DEPLOY_FOLDER' status..."
-rm -rf $DEPLOY_FOLDER
+
+
+if [ "$1" != "remote" ]; then
+  rm -rf $DEPLOY_FOLDER
+fi 
+
 if [ "$1" == "latest" ]; then
   echo "Clonning latest..."
   git clone git@github.com:julianes10/emem.git $DEPLOY_FOLDER
@@ -71,7 +77,7 @@ else
 fi
 
 if [ $rt -eq 0 ]; then
-  echo "Deployment is DONE. Now is recommended you run setup from $DEPLOY_FOLDER"
+  echo "Deployment is DONE. Now is recommended you run setup from $DEPLOY_FOLDER/scsem"
 else
   echo "Deployment FAILED. Check above messages"
 fi

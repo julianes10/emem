@@ -31,7 +31,8 @@ if [ "$1" = "verbose" ]; then
   echo "Status after releasing:"
   reportStatus
 fi
-pushd /home/pi/emem/scsem/containers 
+MY_PATH="`dirname \"$0\"`"
+pushd $MY_PATH/../containers 
 ./docker_influxdb $pi &
 sleep 2
 ./docker_grafana $pi &

@@ -122,7 +122,7 @@ def loggingEnd():
 def launchContainers():
       try:
         helper.internalLogger.info("Relaunching containers...")
-        p=subprocess.Popen([EMEM_DEPLOY_DIR+'/scsem/scripts/launchContainers.sh','verbose'])      
+        p=subprocess.Popen([os.path.dirname(os.path.realpath(__file__))+'/launchContainers.sh','verbose'])      
         helper.internalLogger.debug("Script for launching container started  with popen:")
       except KeyboardInterrupt:
         print("Ok ok, quitting")
